@@ -1,4 +1,4 @@
-package org.singular.request;
+package org.singular.repos;
 
 import org.singular.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;

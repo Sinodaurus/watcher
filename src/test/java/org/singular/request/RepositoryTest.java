@@ -1,6 +1,5 @@
 package org.singular.request;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +10,9 @@ import org.singular.Application;
 import org.singular.entities.MustWatch;
 import org.singular.entities.User;
 import org.singular.entities.Watchable;
+import org.singular.repos.MustWatchRepository;
+import org.singular.repos.UserRepository;
+import org.singular.repos.WatchableRepository;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(MockitoJUnitRunner.class)
