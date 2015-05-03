@@ -4,12 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.singular.entities.MustWatch;
-import org.singular.entities.User;
-import org.singular.entities.Watchable;
-import org.singular.repos.MustWatchRepository;
-import org.singular.repos.UserRepository;
-import org.singular.repos.WatchableRepository;
+import org.singular.entities.wrapper.WatchedMovieWrapper;
 import org.singular.service.WatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,21 +19,21 @@ public class MainController {
     @Autowired
     private WatchService watchService;
 	
-	@RequestMapping(value = "/all", method = RequestMethod.GET)
-	public String all() throws IOException {
+	@RequestMapping(value = "/allKnown", method = RequestMethod.GET)
+	public String allKnown() throws IOException {
         List watchables = watchService.findAllWatchables();
         return objectMapper.writeValueAsString(watchables);
 	}
 
     @RequestMapping(value = "/watchedMovie", method = RequestMethod.POST)
-    public ResponseEntity<Watchable> create (@RequestBody Watchable watchable) throws IOException {
-//        watchService.createMustWatch(watchable, new User("Sven", "Schit"));
-        return new ResponseEntity<Watchable>(watchable, HttpStatus.OK);
+    public ResponseEntity<WatchedMovieWrapper> create (@RequestBody WatchedMovieWrapper watchedMovieWrapper) {
+        watchService.createMustWatch(watchedMovieWrapper.getWatchable(), watchedMovieWrapper.getUser());
+        return new ResponseEntity<WatchedMovieWrapper>(watchedMovieWrapper, HttpStatus.OK);
     }
 
-//    @RequestMapping(value = "/get", method = RequestMethod.GET)
-//    public String get() throws IOException {
-//        List mustwatches = mustWatchRepository.findAll();
-//        return objectMapper.writeValueAsString(mustwatches);
-//    }
+    @RequestMapping(value = "/allSeen", method = RequestMethod.GET)
+    public String allSeen() throws IOException {
+        List mustwatches = watchService.findAllSeenMovies();
+        return objectMapper.writeValueAsString(mustwatches);
+    }
 }

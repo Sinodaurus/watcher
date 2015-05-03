@@ -9,9 +9,9 @@ public class User {
     @GeneratedValue
     @Column(name = "user_id")
     private long userId;
-    @Column(name = "first_name")
+    @Column(name = "first_name", unique = true)
     private String firstName;
-    @Column(name = "last_name")
+    @Column(name = "last_name", unique = true)
     private String lastName;
 
     public User() {}
@@ -43,5 +43,26 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+
+        User user = (User) o;
+
+        if (!firstName.equals(user.firstName)) return false;
+        if (!lastName.equals(user.lastName)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (userId ^ (userId >>> 32));
+        result = 31 * result + firstName.hashCode();
+        result = 31 * result + lastName.hashCode();
+        return result;
     }
 }

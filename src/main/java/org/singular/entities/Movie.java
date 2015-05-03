@@ -1,13 +1,13 @@
 package org.singular.entities;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "watchables")
-public class Watchable implements Serializable{
+public class Movie {
+
     @Id
     @GeneratedValue
     @Column(name = "watchable_id")
@@ -27,14 +27,14 @@ public class Watchable implements Serializable{
     private String metascore;
     @Column(name = "imdb_rating")
     private String imdbRating;
-    @Column(name = "imdb_id")
+    @Column(name = "imdb_id", unique = true)
     private String imdbID;
     private String type;
     private String poster;
 
-    public Watchable() {}
+    public Movie() {}
 
-    public Watchable(String title, String year, String released, String runtime, String genre, String director, String writer, String actors, String plot, String language, String country, String awards, String metascore, String imdbRating, String imdbID, String type, String poster) {
+    public Movie(String title, String year, String released, String runtime, String genre, String director, String writer, String actors, String plot, String language, String country, String awards, String metascore, String imdbRating, String imdbID, String type, String poster) {
         this.title = title;
         this.year = year;
         this.released = released;

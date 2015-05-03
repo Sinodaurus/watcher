@@ -4,25 +4,24 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "must_watch")
-public class MustWatch {
+public class SeenMovie {
     @Id
     @GeneratedValue
     @Column(name = "must_watch_id")
     private long mustWatchId;
     @OneToOne
     @JoinColumn(name = "watchable")
-    private Watchable watchable;
-    @OneToOne
-    @JoinColumn(name = "user")
+    private Movie movie;
+    @ManyToOne(cascade = CascadeType.ALL)
     private User user;
     private boolean seen;
     @Column(name = "must_see")
     private boolean mustSee;
 
-    public MustWatch() {}
+    public SeenMovie() {}
 
-    public MustWatch(Watchable watchable, User user, boolean seen, boolean mustSee) {
-        this.watchable = watchable;
+    public SeenMovie(Movie watchable, User user, boolean seen, boolean mustSee) {
+        this.movie = watchable;
         this.user = user;
         this.seen = seen;
         this.mustSee = mustSee;
@@ -36,12 +35,12 @@ public class MustWatch {
         this.mustWatchId = mustWatchId;
     }
 
-    public Watchable getWatchable() {
-        return watchable;
+    public Movie getWatchable() {
+        return movie;
     }
 
-    public void setWatchable(Watchable watchable) {
-        this.watchable = watchable;
+    public void setWatchable(Movie watchable) {
+        this.movie = watchable;
     }
 
     public User getUser() {

@@ -7,10 +7,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.singular.Application;
-import org.singular.entities.MustWatch;
+import org.singular.entities.Movie;
+import org.singular.entities.SeenMovie;
 import org.singular.entities.User;
-import org.singular.entities.Watchable;
-import org.singular.repos.MustWatchRepository;
+import org.singular.repos.SeenMoviesRepository;
 import org.singular.repos.UserRepository;
 import org.singular.repos.WatchableRepository;
 import org.springframework.test.context.ContextConfiguration;
@@ -25,11 +25,11 @@ public class RepositoryTest {
     private UserRepository userRepository;
 
     @Mock
-    private MustWatchRepository mustWatchRepository;
+    private SeenMoviesRepository seenMoviesRepository;
 
     @Before
     public void before() {
-        Watchable goodMovie = new Watchable(
+        Movie goodMovie = new Movie(
                 "Interstellar",
                 "2014",
                 "2014",
@@ -55,8 +55,8 @@ public class RepositoryTest {
 
     @Test
     public void testMakeMustWatch() {
-        Watchable watchable = watchableRepository.findOne(1L);
+        Movie movie = watchableRepository.findOne(1L);
         User user = userRepository.findOne(1L);
-        mustWatchRepository.save(new MustWatch(watchable, user, true, true));
+        seenMoviesRepository.save(new SeenMovie(movie, user, true, true));
     }
 }
