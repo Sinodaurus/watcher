@@ -11,7 +11,7 @@ public class Watchable implements Serializable{
     @Id
     @GeneratedValue
     @Column(name = "watchable_id")
-    private int watchableId;
+    private long watchableId;
     private String title;
     private String year;
     private String released;
@@ -54,11 +54,11 @@ public class Watchable implements Serializable{
         this.poster = poster;
     }
 
-    public int getWatchableId() {
+    public long getWatchableId() {
         return watchableId;
     }
 
-    public void setWatchableId(int watchableId) {
+    public void setWatchableId(long watchableId) {
         this.watchableId = watchableId;
     }
 
