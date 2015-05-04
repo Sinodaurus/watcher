@@ -1,6 +1,7 @@
 package org.singular.entities;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -9,16 +10,20 @@ public class User {
     @GeneratedValue
     @Column(name = "user_id")
     private long userId;
-    @Column(name = "first_name", unique = true)
+    @Column(name = "first_name")
     private String firstName;
-    @Column(name = "last_name", unique = true)
+    @Column(name = "last_name")
     private String lastName;
+    @ManyToMany(targetEntity = Movie.class)
+    @Column(name = "seen_movie")
+    private List<Movie> seenMovies;
 
     public User() {}
 
-    public User(String firstName, String lastName) {
+    public User(String firstName, String lastName, List seenMovies) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.seenMovies = seenMovies;
     }
 
     public long getUserId() {
@@ -43,6 +48,14 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public List getSeenMovies() {
+        return seenMovies;
+    }
+
+    public void setSeenMovies(List seenMovies) {
+        this.seenMovies = seenMovies;
     }
 
     @Override

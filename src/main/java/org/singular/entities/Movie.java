@@ -3,6 +3,7 @@ package org.singular.entities;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "watchables")
@@ -31,10 +32,13 @@ public class Movie {
     private String imdbID;
     private String type;
     private String poster;
+    @ManyToMany(targetEntity = User.class)
+    @Column(name = "seen_by_user")
+    private List<User> users;
 
     public Movie() {}
 
-    public Movie(String title, String year, String released, String runtime, String genre, String director, String writer, String actors, String plot, String language, String country, String awards, String metascore, String imdbRating, String imdbID, String type, String poster) {
+    public Movie(String title, String year, String released, String runtime, String genre, String director, String writer, String actors, String plot, String language, String country, String awards, String metascore, String imdbRating, String imdbID, String type, String poster, List<User> users) {
         this.title = title;
         this.year = year;
         this.released = released;
@@ -52,6 +56,7 @@ public class Movie {
         this.imdbID = imdbID;
         this.type = type;
         this.poster = poster;
+        this.users = users;
     }
 
     public long getWatchableId() {
@@ -211,5 +216,13 @@ public class Movie {
     @JsonProperty("Poster")
     public void setPoster(String poster) {
         this.poster = poster;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 }

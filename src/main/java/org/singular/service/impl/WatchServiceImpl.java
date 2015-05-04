@@ -43,7 +43,7 @@ public class WatchServiceImpl implements WatchService{
 //        if(userRepository.findByFirstNameAndLastName(user.getFirstName(), user.getLastName()) == null) {
 //            userRepository.save(user);
 //        }
-        SeenMovie seenMovie = new SeenMovie(movie, user, true, false);
+        SeenMovie seenMovie = new SeenMovie(movie, user);
         seenMoviesRepository.save(seenMovie);
     }
 }

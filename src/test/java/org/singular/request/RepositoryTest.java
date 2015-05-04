@@ -1,5 +1,6 @@
 package org.singular.request;
 
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +48,7 @@ public class RepositoryTest {
                 "25214",
                 "type",
                 "http://imgSource.com/img.jpg");
-        User user = new User("Sven", "Schittecatte");
+        User user = new User("Sven", "Schittecatte", Lists.newArrayList());
         Mockito.when(watchableRepository.findOne(1L)).thenReturn(goodMovie);
         Mockito.when(userRepository.findOne(1L)).thenReturn(user);
 
@@ -57,6 +58,6 @@ public class RepositoryTest {
     public void testMakeMustWatch() {
         Movie movie = watchableRepository.findOne(1L);
         User user = userRepository.findOne(1L);
-        seenMoviesRepository.save(new SeenMovie(movie, user, true, true));
+        seenMoviesRepository.save(new SeenMovie(movie, user));
     }
 }
