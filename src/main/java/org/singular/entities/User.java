@@ -1,26 +1,26 @@
 package org.singular.entities;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_id")
     private long userId;
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
-    @ManyToMany(targetEntity = Movie.class)
-    @Column(name = "seen_movie")
-    private List<Movie> seenMovies;
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
+    private Set<Movie> seenMovies = new HashSet<>();
 
     public User() {}
 
-    public User(String firstName, String lastName, List seenMovies) {
+    public User(String firstName, String lastName, Set seenMovies) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.seenMovies = seenMovies;
@@ -50,11 +50,11 @@ public class User {
         this.lastName = lastName;
     }
 
-    public List getSeenMovies() {
+    public Set getSeenMovies() {
         return seenMovies;
     }
 
-    public void setSeenMovies(List seenMovies) {
+    public void setSeenMovies(Set seenMovies) {
         this.seenMovies = seenMovies;
     }
 

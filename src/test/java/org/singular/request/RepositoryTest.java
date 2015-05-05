@@ -1,6 +1,7 @@
 package org.singular.request;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,9 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.singular.Application;
 import org.singular.entities.Movie;
-import org.singular.entities.SeenMovie;
 import org.singular.entities.User;
-import org.singular.repos.SeenMoviesRepository;
 import org.singular.repos.UserRepository;
 import org.singular.repos.WatchableRepository;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,9 +23,6 @@ public class RepositoryTest {
 
     @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private SeenMoviesRepository seenMoviesRepository;
 
     @Before
     public void before() {
@@ -47,8 +43,9 @@ public class RepositoryTest {
                 "9.0",
                 "25214",
                 "type",
-                "http://imgSource.com/img.jpg");
-        User user = new User("Sven", "Schittecatte", Lists.newArrayList());
+                "http://imgSource.com/img.jpg",
+                Sets.newHashSet());
+        User user = new User("Sven", "Schittecatte", Sets.newHashSet());
         Mockito.when(watchableRepository.findOne(1L)).thenReturn(goodMovie);
         Mockito.when(userRepository.findOne(1L)).thenReturn(user);
 
@@ -58,6 +55,5 @@ public class RepositoryTest {
     public void testMakeMustWatch() {
         Movie movie = watchableRepository.findOne(1L);
         User user = userRepository.findOne(1L);
-        seenMoviesRepository.save(new SeenMovie(movie, user));
     }
 }

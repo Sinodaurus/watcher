@@ -1,19 +1,15 @@
 package org.singular.service.impl;
 
-import org.hibernate.exception.JDBCConnectionException;
+import com.google.common.collect.Sets;
 import org.singular.entities.Movie;
-import org.singular.entities.SeenMovie;
 import org.singular.entities.User;
-import org.singular.repos.SeenMoviesRepository;
 import org.singular.repos.UserRepository;
 import org.singular.repos.WatchableRepository;
 import org.singular.service.WatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.ConstraintViolationException;
-import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 @Service
@@ -24,26 +20,22 @@ public class WatchServiceImpl implements WatchService{
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private SeenMoviesRepository seenMoviesRepository;
-
+    @Transactional
     @Override
     public List<Movie> findAllWatchables() {
-        return watchableRepository.findAll();
+        List<Movie> watchables = watchableRepository.findAll();
+        return watchables;
     }
 
-    @Override
-    public List<SeenMovie> findAllSeenMovies() {
-        return seenMoviesRepository.findAll();
-    }
-
+    @Transactional
     @Override
     public void createMustWatch(Movie movie, User user) {
+        movie.setUsers(Sets.newHashSet(user));
+        user.setSeenMovies(Sets.newHashSet(movie));
         watchableRepository.save(movie);
+        userRepository.save(user);
 //        if(userRepository.findByFirstNameAndLastName(user.getFirstName(), user.getLastName()) == null) {
 //            userRepository.save(user);
 //        }
-        SeenMovie seenMovie = new SeenMovie(movie, user);
-        seenMoviesRepository.save(seenMovie);
     }
 }

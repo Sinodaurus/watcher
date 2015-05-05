@@ -3,14 +3,15 @@ package org.singular.entities;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "watchables")
+@Table(name = "movies")
 public class Movie {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "watchable_id")
     private long watchableId;
     private String title;
@@ -32,13 +33,16 @@ public class Movie {
     private String imdbID;
     private String type;
     private String poster;
-    @ManyToMany(targetEntity = User.class)
-    @Column(name = "seen_by_user")
-    private List<User> users;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "seen_movies",
+            joinColumns = @JoinColumn (name = "user"),
+            inverseJoinColumns = @JoinColumn(name = "watchable"))
+    private Set<User> users = new HashSet<>();
 
     public Movie() {}
 
-    public Movie(String title, String year, String released, String runtime, String genre, String director, String writer, String actors, String plot, String language, String country, String awards, String metascore, String imdbRating, String imdbID, String type, String poster, List<User> users) {
+    public Movie(String title, String year, String released, String runtime, String genre, String director, String writer, String actors, String plot, String language, String country, String awards, String metascore, String imdbRating, String imdbID, String type, String poster, Set<User> users) {
         this.title = title;
         this.year = year;
         this.released = released;
@@ -218,11 +222,11 @@ public class Movie {
         this.poster = poster;
     }
 
-    public List<User> getUsers() {
+    public Set<User> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(Set<User> users) {
         this.users = users;
     }
 }
