@@ -1,12 +1,15 @@
 package org.singular.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "user")
-public class User {
+@Table(name = "users")
+public class User implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_id")
@@ -15,7 +18,9 @@ public class User {
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
-    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
+
+    @JsonBackReference
+    @ManyToMany(mappedBy = "seenByUsers", fetch = FetchType.EAGER)
     private Set<Movie> seenMovies = new HashSet<>();
 
     public User() {}
@@ -56,26 +61,5 @@ public class User {
 
     public void setSeenMovies(Set seenMovies) {
         this.seenMovies = seenMovies;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
-
-        User user = (User) o;
-
-        if (!firstName.equals(user.firstName)) return false;
-        if (!lastName.equals(user.lastName)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (userId ^ (userId >>> 32));
-        result = 31 * result + firstName.hashCode();
-        result = 31 * result + lastName.hashCode();
-        return result;
     }
 }

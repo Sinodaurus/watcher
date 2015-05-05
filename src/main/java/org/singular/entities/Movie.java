@@ -1,19 +1,21 @@
 package org.singular.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "movies")
-public class Movie {
+public class Movie implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "watchable_id")
-    private long watchableId;
+    @Column(name = "movie_id")
+    private long movieId;
     private String title;
     private String year;
     private String released;
@@ -33,16 +35,18 @@ public class Movie {
     private String imdbID;
     private String type;
     private String poster;
+
+    @JsonManagedReference
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "seen_movies",
-            joinColumns = @JoinColumn (name = "user"),
-            inverseJoinColumns = @JoinColumn(name = "watchable"))
-    private Set<User> users = new HashSet<>();
+            joinColumns = @JoinColumn (name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> seenByUsers = new HashSet<>();
 
     public Movie() {}
 
-    public Movie(String title, String year, String released, String runtime, String genre, String director, String writer, String actors, String plot, String language, String country, String awards, String metascore, String imdbRating, String imdbID, String type, String poster, Set<User> users) {
+    public Movie(String title, String year, String released, String runtime, String genre, String director, String writer, String actors, String plot, String language, String country, String awards, String metascore, String imdbRating, String imdbID, String type, String poster, Set<User> seenByUsers) {
         this.title = title;
         this.year = year;
         this.released = released;
@@ -60,15 +64,15 @@ public class Movie {
         this.imdbID = imdbID;
         this.type = type;
         this.poster = poster;
-        this.users = users;
+        this.seenByUsers = seenByUsers;
     }
 
-    public long getWatchableId() {
-        return watchableId;
+    public long getMovieId() {
+        return movieId;
     }
 
-    public void setWatchableId(long watchableId) {
-        this.watchableId = watchableId;
+    public void setMovieId(long movieId) {
+        this.movieId = movieId;
     }
 
     public String getTitle() {
@@ -222,11 +226,11 @@ public class Movie {
         this.poster = poster;
     }
 
-    public Set<User> getUsers() {
-        return users;
+    public Set<User> getSeenByUsers() {
+        return seenByUsers;
     }
 
-    public void setUsers(Set<User> users) {
-        this.users = users;
+    public void setSeenByUsers(Set<User> seenByUsers) {
+        this.seenByUsers = seenByUsers;
     }
 }
