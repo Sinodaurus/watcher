@@ -8,35 +8,28 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
-public class User implements Serializable{
+@Table(name = "persons")
+public class Person implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_id")
-    private long userId;
+    @Column(name = "person_id")
+    private long personId;
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
 
-    @JsonBackReference
-    @ManyToMany(mappedBy = "seenByUsers", fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "seenByPersons", fetch = FetchType.EAGER)
     private Set<Movie> seenMovies = new HashSet<>();
 
-    public User() {}
+    public Person() {}
 
-    public User(String firstName, String lastName, Set seenMovies) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.seenMovies = seenMovies;
+    public long getPersonId() {
+        return personId;
     }
 
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setPersonId(long personId) {
+        this.personId = personId;
     }
 
     public String getFirstName() {
@@ -55,11 +48,15 @@ public class User implements Serializable{
         this.lastName = lastName;
     }
 
-    public Set getSeenMovies() {
+    public Set<Movie> getSeenMovies() {
         return seenMovies;
     }
 
-    public void setSeenMovies(Set seenMovies) {
+    public void setSeenMovies(Set<Movie> seenMovies) {
         this.seenMovies = seenMovies;
+    }
+
+    public void addMovie(Movie movie) {
+        this.seenMovies.add(movie);
     }
 }

@@ -1,85 +1,73 @@
 package org.singular.request;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.matchers.JUnitMatchers;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
 import org.singular.Application;
 import org.singular.entities.Movie;
-import org.singular.entities.User;
-import org.singular.repos.UserRepository;
-import org.singular.repos.WatchableRepository;
+import org.singular.entities.Person;
+import org.singular.entities.dto.movie.MovieInfoDTO;
+import org.singular.repos.MovieRepository;
+import org.singular.repos.PersonRepository;
 import org.springframework.test.context.ContextConfiguration;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.*;
-
 import java.io.IOException;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration(classes = Application.class)
 public class RepositoryTest {
     private Movie goodMovie;
-    private User user;
+    private Person person;
     private ObjectMapper objectMapper = new ObjectMapper();
+    private ModelMapper modelMapper = new ModelMapper();
 
     @Mock
-    private WatchableRepository watchableRepository;
+    private MovieRepository movieRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private PersonRepository personRepository;
 
     @Before
     public void before() {
-        goodMovie = new Movie(
-                "Interstellar",
-                "2014",
-                "2014",
-                "150",
-                "sci-fi",
-                "Christopher Nolan", // make director object
-                "Christopher Nolan",
-                "Mcanaughy, Girl",
-                "They die.",
-                "English",
-                "America",
-                "Oscars",
-                "8.9",
-                "9.0",
-                "25214",
-                "type",
-                "http://imgSource.com/img.jpg",
-                Sets.newHashSet());
-        user = new User("Sven", "Schittecatte", Sets.newHashSet());
-        Mockito.when(watchableRepository.findOne(1L)).thenReturn(goodMovie);
-        Mockito.when(userRepository.findOne(1L)).thenReturn(user);
+        goodMovie = new Movie();
+        person = new Person();
+        goodMovie.setTitle("Interstellar");
+        person.setFirstName("Sven");
+        goodMovie.addPerson(person);
+        person.addMovie(goodMovie);
+
+        Mockito.when(movieRepository.findOne(1L)).thenReturn(goodMovie);
+        Mockito.when(personRepository.findOne(1L)).thenReturn(person);
 
     }
 
     @Test
     public void testMakeMustWatch() {
-        Movie movie = watchableRepository.findOne(1L);
-        User user = userRepository.findOne(1L);
+        Movie movie = movieRepository.findOne(1L);
+        Person person = personRepository.findOne(1L);
     }
 
     @Test
     public void testJsonInfiniteLoop() throws IOException {
-        goodMovie.setSeenByUsers(Sets.newHashSet(user));
-        user.setSeenMovies(Sets.newHashSet(goodMovie));
-        String result = objectMapper.writeValueAsString(goodMovie);
+        MovieInfoDTO movie = modelMapper.map(goodMovie, MovieInfoDTO.class);
+        String result = objectMapper.writeValueAsString(movie);
         assertThat(result, containsString("Interstellar"));
         assertThat(result, containsString("Sven"));
-        assertThat(result, containsString("seenByUsers"));
+        assertThat(result, containsString("seenByPersons"));
+    }
 
+    @Test
+    public void testSaveMovieSeen() {
+        movieRepository.save(goodMovie);
+        personRepository.save(person);
     }
 }

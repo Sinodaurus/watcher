@@ -1,20 +1,12 @@
-package org.singular.entities;
+package org.singular.entities.dto.person;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.singular.entities.dto.movie.PersonInfoWithoutMoviesDTO;
 
-import javax.persistence.*;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
-@Table(name = "movies")
-public class Movie implements Serializable{
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "movie_id")
+public class MovieInfoWithoutPersonsDTO {
     private long movieId;
     private String title;
     private String year;
@@ -29,21 +21,12 @@ public class Movie implements Serializable{
     private String country;
     private String awards;
     private String metascore;
-    @Column(name = "imdb_rating")
     private String imdbRating;
-    @Column(name = "imdb_id", unique = true)
     private String imdbID;
     private String type;
     private String poster;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "seen_movies",
-            joinColumns = @JoinColumn (name = "movie_id"),
-            inverseJoinColumns = @JoinColumn(name = "person_id"))
-    private Set<Person> seenByPersons = new HashSet<>();
-
-    public Movie() {}
+    public MovieInfoWithoutPersonsDTO() {}
 
     public long getMovieId() {
         return movieId;
@@ -53,7 +36,9 @@ public class Movie implements Serializable{
         this.movieId = movieId;
     }
 
-    public String getTitle() {return title; }
+    public String getTitle() {
+        return title;
+    }
 
     @JsonProperty("Title")
     public void setTitle(String title) {
@@ -200,17 +185,5 @@ public class Movie implements Serializable{
     @JsonProperty("Poster")
     public void setPoster(String poster) {
         this.poster = poster;
-    }
-
-    public Set<Person> getSeenByPersons() {
-        return seenByPersons;
-    }
-
-    public void setSeenByPersons(Set<Person> seenByPersons) {
-        this.seenByPersons = seenByPersons;
-    }
-
-    public void addPerson(Person person) {
-        this.seenByPersons.add(person);
     }
 }
