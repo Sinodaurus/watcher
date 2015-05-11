@@ -38,13 +38,20 @@ public class WatchServiceImpl implements WatchService{
     }
 
     @Override
-    public List<PersonInfoDTO> findAllUsers() {
+    public List<PersonInfoDTO> findAllPersons() {
         List<Person> persons = personRepository.findAll();
         List<PersonInfoDTO> personInfoDTOs = new ArrayList<>();
         for(Person person : persons) {
             personInfoDTOs.add(modelMapper.map(person, PersonInfoDTO.class));
         }
         return personInfoDTOs;
+    }
+
+    @Override
+    public PersonInfoDTO findPerson(String firstName, String lastName) {
+        Person person = personRepository.findByFirstNameAndLastName(firstName, lastName);
+        PersonInfoDTO personInfoDTO = modelMapper.map(person, PersonInfoDTO.class);
+        return personInfoDTO;
     }
 
     @Transactional

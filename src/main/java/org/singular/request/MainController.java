@@ -3,15 +3,13 @@ package org.singular.request;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.singular.entities.Movie;
 import org.singular.entities.Person;
+import org.singular.entities.dto.person.PersonInfoDTO;
 import org.singular.entities.dto.wrapper.WatchedMovieWrapper;
 import org.singular.service.WatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,16 +22,22 @@ public class MainController {
     @Autowired
     private WatchService watchService;
 
-	@RequestMapping(value = "/allKnown", method = RequestMethod.GET)
-	public String allKnown() throws IOException {
+	@RequestMapping(value = "/allMovies", method = RequestMethod.GET)
+	public String allMovies() throws IOException {
         List movies = watchService.findAllMovies();
         return objectMapper.writeValueAsString(movies);
 	}
 
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
-    public String all() throws IOException {
-        List users = watchService.findAllUsers();
-        return objectMapper.writeValueAsString(users);
+    @RequestMapping(value = "/allPersons", method = RequestMethod.GET)
+    public String allUsers() throws IOException {
+        List persons = watchService.findAllPersons();
+        return objectMapper.writeValueAsString(persons);
+    }
+
+    @RequestMapping(value = "/findPerson/{firstName}/{lastName}", method = RequestMethod.GET)
+    public String findUser(@PathVariable String firstName, @PathVariable String lastName) throws IOException {
+        PersonInfoDTO person = watchService.findPerson(firstName, lastName);
+        return objectMapper.writeValueAsString(person);
     }
 
     @RequestMapping(value = "/watchedMovie", method = RequestMethod.POST, consumes = "application/json")
@@ -42,15 +46,13 @@ public class MainController {
             return new ResponseEntity<WatchedMovieWrapper>(watchedMovieWrapper, HttpStatus.OK);
         }
 
-    @RequestMapping(value = "/helpUser", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "/helpPerson", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<Person> helpUser (@RequestBody Person person){
-//        watchService.movieSeenByUser(watchedMovieWrapper.getWatchable(), watchedMovieWrapper.getUser());
         return new ResponseEntity<Person>(person, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/helpMovie", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<Movie> helpMovie (@RequestBody Movie movie){
-//        watchService.movieSeenByUser(watchedMovieWrapper.getWatchable(), watchedMovieWrapper.getUser());
         return new ResponseEntity<Movie>(movie, HttpStatus.OK);
     }
 }

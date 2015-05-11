@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface WatchService {
     public List<MovieInfoDTO> findAllMovies();
-    public List<PersonInfoDTO> findAllUsers();
+    public List<PersonInfoDTO> findAllPersons();
+    public PersonInfoDTO findPerson(String firstName, String lastName);
     public void movieSeenByUser(MovieInfoWithoutPersonsDTO movieWithoutPerson, PersonInfoWithoutMoviesDTO personWithoutMovie);
 }

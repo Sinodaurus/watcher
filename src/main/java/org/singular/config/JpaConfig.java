@@ -1,6 +1,5 @@
 package org.singular.config;
 
-import org.hibernate.cfg.Environment;
 import org.singular.Application;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
