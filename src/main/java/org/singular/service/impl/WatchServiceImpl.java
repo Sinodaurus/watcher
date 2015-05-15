@@ -48,10 +48,50 @@ public class WatchServiceImpl implements WatchService{
     }
 
     @Override
+    public PersonInfoDTO findPersonById(long id) {
+        Person person = personRepository.findOne(id);
+        PersonInfoDTO personInfoDTO = modelMapper.map(person, PersonInfoDTO.class);
+        return personInfoDTO;
+    }
+
+    @Override
     public PersonInfoDTO findPerson(String firstName, String lastName) {
         Person person = personRepository.findByFirstNameAndLastName(firstName, lastName);
         PersonInfoDTO personInfoDTO = modelMapper.map(person, PersonInfoDTO.class);
         return personInfoDTO;
+    }
+
+    @Override
+    public MovieInfoWithoutPersonsDTO findMovieById(long id) {
+        Movie movie = movieRepository.findOne(id);
+        MovieInfoWithoutPersonsDTO movieInfoWithoutPersonsDTO = modelMapper.map(movie, MovieInfoWithoutPersonsDTO.class);
+        return movieInfoWithoutPersonsDTO;
+    }
+
+    @Transactional
+    @Override
+    public void movieSeenByExistingPerson(long personId, long movieId) {
+        Person person = personRepository.findOne(personId);
+        Movie movie = movieRepository.findOne(movieId);
+
+        if(movie != null && person != null) {
+            movie.addPerson(person);
+            person.addMovie(movie);
+            movieRepository.save(movie);
+            personRepository.save(person);
+        }
+    }
+
+    @Transactional
+    @Override
+    public MovieInfoWithoutPersonsDTO saveMovie(MovieInfoWithoutPersonsDTO movieInfoWithoutPersonsDTO) {
+        Movie movieToSave = modelMapper.map(movieInfoWithoutPersonsDTO, Movie.class);
+        Movie movie = movieRepository.findByTitle(movieToSave.getTitle());
+        if(movie != null) {
+            return modelMapper.map(movie, MovieInfoWithoutPersonsDTO.class);
+        }
+        movie = movieRepository.save(movieToSave);
+        return modelMapper.map(movie, MovieInfoWithoutPersonsDTO.class);
     }
 
     @Transactional
@@ -70,8 +110,29 @@ public class WatchServiceImpl implements WatchService{
             }
             movieRepository.save(movieToUpdate);
         } else {
-            movie.addPerson(person);
+            if(personToUpdate != null) {
+                movie.addPerson(personToUpdate);
+            } else {
+                movie.addPerson(person);
+            }
             movieRepository.save(movie);
         }
+    }
+
+    @Transactional
+    @Override
+    public void deleteMovieForPerson(long personId, long movieId) {
+        Person person = personRepository.findOne(personId);
+        Movie movie = movieRepository.findOne(movieId);
+//        Set<Movie> moviesForPerson = new HashSet<>();
+//        for(Movie movieForPerson : person.getSeenMovies()) {
+//            if(movieForPerson.getMovieId() != movie.getMovieId()) {
+//                moviesForPerson.add(movieForPerson);
+//            }
+//        }
+        person.removeMovie(movie);
+        movie.removePerson(person);
+        personRepository.save(person);
+        movieRepository.save(movie);
     }
 }

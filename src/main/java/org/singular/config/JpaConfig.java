@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 
 import javax.sql.DataSource;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 @Configuration
@@ -24,7 +26,7 @@ class JpaConfig implements TransactionManagementConfigurer {
     @Value("${dataSource.driverClassName}")
     private String driver;
     @Value("${dataSource.url}")
-    private String url;
+    private String host;
     @Value("${dataSource.username}")
     private String username;
     @Value("${dataSource.password}")
@@ -33,10 +35,16 @@ class JpaConfig implements TransactionManagementConfigurer {
     private String dialect;
 
     @Bean
-    public DataSource configureDataSource() {
+    public DataSource configureDataSource() throws IOException {
+        Properties prop = new Properties();
+        prop.load(new FileInputStream(System.getProperty("user.home") + "/mydb.cfg"));
+        String host = prop.getProperty("host").toString();
+        String username = prop.getProperty("username").toString();
+        String password = prop.getProperty("password").toString();
+        String driver = prop.getProperty("driver").toString();
         DriverManagerDataSource config = new DriverManagerDataSource();
         config.setDriverClassName(driver);
-        config.setUrl(url);
+        config.setUrl(host);
         config.setUsername(username);
         config.setPassword(password);
 
@@ -44,7 +52,7 @@ class JpaConfig implements TransactionManagementConfigurer {
     }
 
     @Bean (name = "entityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean configureEntityManagerFactory() {
+    public LocalContainerEntityManagerFactoryBean configureEntityManagerFactory() throws IOException {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(configureDataSource());
         entityManagerFactoryBean.setPackagesToScan("org.singular");

@@ -1,6 +1,5 @@
 package org.singular.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
@@ -212,5 +211,9 @@ public class Movie implements Serializable{
 
     public void addPerson(Person person) {
         this.seenByPersons.add(person);
+    }
+
+    public void removePerson(Person person) {
+        this.seenByPersons.remove(person);
     }
 }

@@ -1,10 +1,6 @@
 package org.singular.entities.dto.person;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.singular.entities.dto.movie.PersonInfoWithoutMoviesDTO;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class MovieInfoWithoutPersonsDTO {
     private long movieId;

@@ -1,7 +1,5 @@
 package org.singular.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -58,5 +56,9 @@ public class Person implements Serializable{
 
     public void addMovie(Movie movie) {
         this.seenMovies.add(movie);
+    }
+
+    public void removeMovie(Movie movie) {
+        this.seenMovies.remove(movie);
     }
 }
