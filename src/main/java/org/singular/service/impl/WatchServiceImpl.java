@@ -90,8 +90,8 @@ public class WatchServiceImpl implements WatchService{
         if(movie != null) {
             return modelMapper.map(movie, MovieInfoWithoutPersonsDTO.class);
         }
-        movie = movieRepository.save(movieToSave);
-        return modelMapper.map(movie, MovieInfoWithoutPersonsDTO.class);
+        movieRepository.save(movieToSave);
+        return modelMapper.map(movieToSave, MovieInfoWithoutPersonsDTO.class);
     }
 
     @Transactional

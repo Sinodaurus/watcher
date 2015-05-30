@@ -36,12 +36,12 @@ class JpaConfig implements TransactionManagementConfigurer {
 
     @Bean
     public DataSource configureDataSource() throws IOException {
-        Properties prop = new Properties();
-        prop.load(new FileInputStream(System.getProperty("user.home") + "/mydb.cfg"));
-        String host = prop.getProperty("host").toString();
-        String username = prop.getProperty("username").toString();
-        String password = prop.getProperty("password").toString();
-        String driver = prop.getProperty("driver").toString();
+//        Properties prop = new Properties();
+//        prop.load(new FileInputStream(System.getProperty("user.home") + "/mydb.cfg"));
+//        String host = prop.getProperty("host").toString();
+//        String username = prop.getProperty("username").toString();
+//        String password = prop.getProperty("password").toString();
+//        String driver = prop.getProperty("driver").toString();
         DriverManagerDataSource config = new DriverManagerDataSource();
         config.setDriverClassName(driver);
         config.setUrl(host);
