@@ -2,6 +2,7 @@ package org.singular.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,6 +17,8 @@ public class Person implements Serializable{
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
+    private String password;
+    private String username;
 
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "seenByPersons", fetch = FetchType.EAGER)
     private Set<Movie> seenMovies = new HashSet<>();
@@ -44,6 +47,22 @@ public class Person implements Serializable{
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Set<Movie> getSeenMovies() {

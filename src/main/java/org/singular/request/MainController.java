@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -22,12 +23,6 @@ public class MainController {
 
     @Autowired
     private WatchService watchService;
-
-	@RequestMapping(value = "/movie", method = RequestMethod.GET)
-	public String allMovies() throws IOException {
-        List movies = watchService.findAllMovies();
-        return objectMapper.writeValueAsString(movies);
-	}
 
     @RequestMapping(value = "/person", method = RequestMethod.GET)
     public String allUsers() throws IOException {
@@ -41,6 +36,12 @@ public class MainController {
         return objectMapper.writeValueAsString(person);
     }
 
+    @RequestMapping(value = "/get/{userName}", method = RequestMethod.GET)
+    public String userName(@PathVariable String userName) throws IOException {
+        PersonInfoDTO person = watchService.findPersonByUserName(userName);
+        return objectMapper.writeValueAsString(person);
+    }
+
     @RequestMapping(value = "/movie/{id}", method = RequestMethod.GET)
     public String singleMovie(@PathVariable long id) throws IOException {
         MovieInfoWithoutPersonsDTO movieInfoWithoutPersonsDTO = watchService.findMovieById(id);
@@ -51,6 +52,14 @@ public class MainController {
     public ResponseEntity<MovieInfoWithoutPersonsDTO> create (@RequestBody MovieInfoWithoutPersonsDTO movieInfoWithoutPersonsDTO){
         MovieInfoWithoutPersonsDTO returnedMovie = watchService.saveMovie(movieInfoWithoutPersonsDTO);
         return new ResponseEntity<MovieInfoWithoutPersonsDTO>(returnedMovie, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/auth/{username}", method = RequestMethod.GET)
+    public String authenticate(@RequestHeader("Authorization") String auth, @PathVariable String username) throws IOException {
+        if(auth.equalsIgnoreCase("Basic " + watchService.getPassword(username))) {
+            return "authentified";
+        }
+        return "error";
     }
 
     @RequestMapping(value = "/person/{personId}/deleteMovie/{movieId}", method = RequestMethod.DELETE)

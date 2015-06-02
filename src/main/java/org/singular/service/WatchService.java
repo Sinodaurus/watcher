@@ -17,4 +17,6 @@ public interface WatchService {
     public MovieInfoWithoutPersonsDTO saveMovie(MovieInfoWithoutPersonsDTO movieInfoWithoutPersonsDTO);
     public void movieSeenByUser(MovieInfoWithoutPersonsDTO movieWithoutPerson, PersonInfoWithoutMoviesDTO personWithoutMovie);
     public void deleteMovieForPerson(long personId, long movieId);
+    public String getPassword(String username);
+    public PersonInfoDTO findPersonByUserName(String userName);
 }

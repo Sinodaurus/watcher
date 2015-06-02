@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -124,15 +125,21 @@ public class WatchServiceImpl implements WatchService{
     public void deleteMovieForPerson(long personId, long movieId) {
         Person person = personRepository.findOne(personId);
         Movie movie = movieRepository.findOne(movieId);
-//        Set<Movie> moviesForPerson = new HashSet<>();
-//        for(Movie movieForPerson : person.getSeenMovies()) {
-//            if(movieForPerson.getMovieId() != movie.getMovieId()) {
-//                moviesForPerson.add(movieForPerson);
-//            }
-//        }
         person.removeMovie(movie);
         movie.removePerson(person);
         personRepository.save(person);
         movieRepository.save(movie);
+    }
+
+    @Override
+    public String getPassword(String username) {
+        Person person = personRepository.findByUsername(username);
+        return Base64.getEncoder().encodeToString((person.getUsername() + ":" + person.getPassword()).getBytes());
+    }
+
+    @Override
+    public PersonInfoDTO findPersonByUserName(String userName) {
+        Person person = personRepository.findByUsername(userName);
+        return modelMapper.map(person, PersonInfoDTO.class);
     }
 }
