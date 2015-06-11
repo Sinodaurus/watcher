@@ -85,18 +85,6 @@ public class WatchServiceImpl implements WatchService{
 
     @Transactional
     @Override
-    public MovieInfoWithoutPersonsDTO saveMovie(MovieInfoWithoutPersonsDTO movieInfoWithoutPersonsDTO) {
-        Movie movieToSave = modelMapper.map(movieInfoWithoutPersonsDTO, Movie.class);
-        Movie movie = movieRepository.findByTitle(movieToSave.getTitle());
-        if(movie != null) {
-            return modelMapper.map(movie, MovieInfoWithoutPersonsDTO.class);
-        }
-        movieRepository.save(movieToSave);
-        return modelMapper.map(movieToSave, MovieInfoWithoutPersonsDTO.class);
-    }
-
-    @Transactional
-    @Override
     public void movieSeenByUser(MovieInfoWithoutPersonsDTO movieWithoutPerson, PersonInfoWithoutMoviesDTO personWithoutMovie) {
         Movie movie = modelMapper.map(movieWithoutPerson, Movie.class);
         Person person = modelMapper.map(personWithoutMovie, Person.class);
