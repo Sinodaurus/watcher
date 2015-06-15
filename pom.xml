@@ -11,6 +11,8 @@
     <name>WatcherRestService</name>
     <scm>
         <developerConnection>scm:git:git@github.com:Sinodaurus/watcher.git</developerConnection>
+        <url>scm:git:git@github.com:Sinodaurus/watcher.git</url>
+        <connection>scm:git:git@github.com:Sinodaurus/watcher.git</connection>
     </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
