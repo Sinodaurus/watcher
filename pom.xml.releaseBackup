@@ -8,7 +8,7 @@
     <artifactId>watcher</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>WatcherRestService</name>
+    <name>Spring MVC Application</name>
     <scm>
         <connection>scm:git:ssh://git@github.com:Sinodaurus/watcher.git</connection>
     </scm>
