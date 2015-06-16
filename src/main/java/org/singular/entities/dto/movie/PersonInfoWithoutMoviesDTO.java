@@ -7,6 +7,11 @@ public class PersonInfoWithoutMoviesDTO {
 
     public PersonInfoWithoutMoviesDTO() {}
 
+    public PersonInfoWithoutMoviesDTO(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     public long getPersonId() {
         return personId;
     }

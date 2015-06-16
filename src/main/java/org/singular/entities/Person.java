@@ -21,7 +21,7 @@ public class Person implements Serializable{
     private String username;
 
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "seenByPersons", fetch = FetchType.EAGER)
-    private Set<Movie> seenMovies = new HashSet<>();
+    private Set<SeenMovie> seenMovies = new HashSet<>();
 
     public Person() {}
 
@@ -65,19 +65,19 @@ public class Person implements Serializable{
         this.username = username;
     }
 
-    public Set<Movie> getSeenMovies() {
+    public Set<SeenMovie> getSeenMovies() {
         return seenMovies;
     }
 
-    public void setSeenMovies(Set<Movie> seenMovies) {
+    public void setSeenMovies(Set<SeenMovie> seenMovies) {
         this.seenMovies = seenMovies;
     }
 
-    public void addMovie(Movie movie) {
-        this.seenMovies.add(movie);
+    public void addMovie(SeenMovie movieId) {
+        this.seenMovies.add(movieId);
     }
 
-    public void removeMovie(Movie movie) {
-        this.seenMovies.remove(movie);
+    public void removeMovie(SeenMovie movieId) {
+        this.seenMovies.remove(movieId);
     }
 }

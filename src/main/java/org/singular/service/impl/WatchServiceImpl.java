@@ -1,14 +1,12 @@
 package org.singular.service.impl;
 
 import org.modelmapper.ModelMapper;
-import org.singular.entities.Movie;
 import org.singular.entities.Person;
-import org.singular.entities.dto.movie.MovieInfoDTO;
-import org.singular.entities.dto.movie.PersonInfoWithoutMoviesDTO;
-import org.singular.entities.dto.person.MovieInfoWithoutPersonsDTO;
+import org.singular.entities.SeenMovie;
 import org.singular.entities.dto.person.PersonInfoDTO;
-import org.singular.repos.MovieRepository;
+import org.singular.entities.dto.movie.SeenMovieDTO;
 import org.singular.repos.PersonRepository;
+import org.singular.repos.SeenMovieRepository;
 import org.singular.service.WatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,21 +21,12 @@ public class WatchServiceImpl implements WatchService{
     private ModelMapper modelMapper = new ModelMapper();
 
     @Autowired
-    private MovieRepository movieRepository;
+    private SeenMovieRepository seenMovieRepository;
 
     @Autowired
     private PersonRepository personRepository;
 
-    @Override
-    public List<MovieInfoDTO> findAllMovies() {
-        List<Movie> movies = movieRepository.findAll();
-        List<MovieInfoDTO> movieInfoDTOs = new ArrayList<>();
-        for(Movie movie : movies) {
-            movieInfoDTOs.add(modelMapper.map(movie, MovieInfoDTO.class));
-        }
-        return movieInfoDTOs;
-    }
-
+    @Transactional
     @Override
     public List<PersonInfoDTO> findAllPersons() {
         List<Person> persons = personRepository.findAll();
@@ -48,6 +37,7 @@ public class WatchServiceImpl implements WatchService{
         return personInfoDTOs;
     }
 
+    @Transactional
     @Override
     public PersonInfoDTO findPersonById(long id) {
         Person person = personRepository.findOne(id);
@@ -62,61 +52,35 @@ public class WatchServiceImpl implements WatchService{
         return personInfoDTO;
     }
 
-    @Override
-    public MovieInfoWithoutPersonsDTO findMovieById(long id) {
-        Movie movie = movieRepository.findOne(id);
-        MovieInfoWithoutPersonsDTO movieInfoWithoutPersonsDTO = modelMapper.map(movie, MovieInfoWithoutPersonsDTO.class);
-        return movieInfoWithoutPersonsDTO;
-    }
-
     @Transactional
     @Override
-    public void movieSeenByExistingPerson(long personId, long movieId) {
+    public PersonInfoDTO movieSeenByExistingPerson(long personId, String imdbMovieId) {
         Person person = personRepository.findOne(personId);
-        Movie movie = movieRepository.findOne(movieId);
+        SeenMovie seenMovie = seenMovieRepository.findByImdbMovieId(imdbMovieId);
 
-        if(movie != null && person != null) {
-            movie.addPerson(person);
-            person.addMovie(movie);
-            movieRepository.save(movie);
-            personRepository.save(person);
+        if(seenMovie == null) {
+            SeenMovieDTO seenMovieDTO = new SeenMovieDTO(imdbMovieId);
+            seenMovie = modelMapper.map(seenMovieDTO, SeenMovie.class);
+            seenMovieRepository.save(seenMovie);
         }
+
+        if(person != null) {
+            person.addMovie(seenMovie);
+            seenMovie.addPerson(person);
+        }
+
+        PersonInfoDTO personInfoDTO = modelMapper.map(person, PersonInfoDTO.class);
+
+        return personInfoDTO;
     }
 
     @Transactional
     @Override
-    public void movieSeenByUser(MovieInfoWithoutPersonsDTO movieWithoutPerson, PersonInfoWithoutMoviesDTO personWithoutMovie) {
-        Movie movie = modelMapper.map(movieWithoutPerson, Movie.class);
-        Person person = modelMapper.map(personWithoutMovie, Person.class);
-
-        Movie movieToUpdate = movieRepository.findByTitle(movie.getTitle());
-        Person personToUpdate = personRepository.findByFirstNameAndLastName(person.getFirstName(), person.getLastName());
-        if(movieToUpdate != null) {
-            if(personToUpdate != null) {
-                movieToUpdate.addPerson(personToUpdate);
-            } else {
-                movieToUpdate.addPerson(person);
-            }
-            movieRepository.save(movieToUpdate);
-        } else {
-            if(personToUpdate != null) {
-                movie.addPerson(personToUpdate);
-            } else {
-                movie.addPerson(person);
-            }
-            movieRepository.save(movie);
-        }
-    }
-
-    @Transactional
-    @Override
-    public void deleteMovieForPerson(long personId, long movieId) {
+    public void deleteMovieForPerson(long personId, String imdbMovieId) {
         Person person = personRepository.findOne(personId);
-        Movie movie = movieRepository.findOne(movieId);
-        person.removeMovie(movie);
-        movie.removePerson(person);
+        SeenMovie seenMovie = seenMovieRepository.findByImdbMovieId(imdbMovieId);
+        person.removeMovie(seenMovie);
         personRepository.save(person);
-        movieRepository.save(movie);
     }
 
     @Override

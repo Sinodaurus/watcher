@@ -1,4 +1,4 @@
-package org.singular.request;
+package org.singular.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.singular.service.WatchService;

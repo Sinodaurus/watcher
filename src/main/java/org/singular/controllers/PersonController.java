@@ -1,11 +1,7 @@
-package org.singular.request;
+package org.singular.controllers;
 
 import org.singular.entities.dto.person.PersonInfoDTO;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import sun.misc.BASE64Encoder;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -32,25 +28,20 @@ public class PersonController extends Controller{
         return objectMapper.writeValueAsString(person);
     }
 
-    @RequestMapping(value = "persons/user/{userName}", method = RequestMethod.GET)
-    public String userName(@PathVariable String userName) throws IOException {
-        PersonInfoDTO person = watchService.findPersonByUserName(userName);
-        return objectMapper.writeValueAsString(person);
-    }
-
     @RequestMapping(value = "/persons/person/{personId}/deleteMovie/{movieId}", method = RequestMethod.DELETE)
-    public void deleteMovieForPerson(@PathVariable long personId, @PathVariable long movieId) throws IOException {
-        watchService.deleteMovieForPerson(personId, movieId);
+    public void deleteMovieForPerson(@PathVariable long personId, @PathVariable String imdbMovieId) throws IOException {
+        watchService.deleteMovieForPerson(personId, imdbMovieId);
     }
 
-    @RequestMapping(value = "/persons/person/{personId}/watchedMovie/{movieId}", method = RequestMethod.GET)
-    public void seenMovieByPerson (@PathVariable long personId, @PathVariable long movieId){
-        watchService.movieSeenByExistingPerson(personId, movieId);
+    @RequestMapping(value = "/persons/person/{id}", method = RequestMethod.PUT, consumes = "application/json")
+    public String seenMovieByPerson (@PathVariable long id, @RequestBody String imdbMovieId) throws IOException {
+        PersonInfoDTO personInfoDTO = watchService.movieSeenByExistingPerson(id, imdbMovieId);
+//        return new ResponseEntity<Person>(person,HttpStatus.OK);
+        return objectMapper.writeValueAsString(personInfoDTO);
     }
 
     public static void main(String[] args) {
         String base64 = Base64.getEncoder().encodeToString("wing:kalf".getBytes());
         System.out.print(base64);
     }
-
 }
