@@ -86,12 +86,20 @@ public class WatchServiceImpl implements WatchService{
     @Override
     public String getPassword(String username) {
         Person person = personRepository.findByUsername(username);
-        return Base64.getEncoder().encodeToString((person.getUsername() + ":" + person.getPassword()).getBytes());
+        if(person != null) {
+            return Base64.getEncoder().encodeToString((person.getUsername() + ":" + person.getPassword()).getBytes());
+        } else {
+            return null;
+        }
     }
 
     @Override
     public PersonInfoDTO findPersonByUserName(String userName) {
         Person person = personRepository.findByUsername(userName);
-        return modelMapper.map(person, PersonInfoDTO.class);
+        if(person != null) {
+            return modelMapper.map(person, PersonInfoDTO.class);
+        } else {
+            return null;
+        }
     }
 }
