@@ -1,12 +1,14 @@
 package org.singular.service.impl;
 
 import org.modelmapper.ModelMapper;
+import org.singular.entities.Movie;
 import org.singular.entities.Person;
-import org.singular.entities.SeenMovie;
+import org.singular.entities.dto.movie.PersonInfoWithoutMoviesDTO;
+import org.singular.entities.dto.person.MovieInfoWithoutPersonsDTO;
 import org.singular.entities.dto.person.PersonInfoDTO;
-import org.singular.entities.dto.movie.SeenMovieDTO;
+import org.singular.entities.dto.movie.MovieInfoDTO;
 import org.singular.repos.PersonRepository;
-import org.singular.repos.SeenMovieRepository;
+import org.singular.repos.MovieRepository;
 import org.singular.service.WatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,10 +23,20 @@ public class WatchServiceImpl implements WatchService{
     private ModelMapper modelMapper = new ModelMapper();
 
     @Autowired
-    private SeenMovieRepository seenMovieRepository;
+    private MovieRepository movieRepository;
 
     @Autowired
     private PersonRepository personRepository;
+
+    @Override
+    public List<MovieInfoDTO> findAllMovies() {
+        List<Movie> movies = movieRepository.findAll();
+        List<MovieInfoDTO> movieInfoDTOs = new ArrayList<>();
+        for(Movie movie : movies) {
+            movieInfoDTOs.add(modelMapper.map(movie, MovieInfoDTO.class));
+        }
+        return movieInfoDTOs;
+    }
 
     @Transactional
     @Override
@@ -46,6 +58,13 @@ public class WatchServiceImpl implements WatchService{
     }
 
     @Override
+    public MovieInfoWithoutPersonsDTO findMovieById(long id) {
+        Movie movie = movieRepository.findOne(id);
+        MovieInfoWithoutPersonsDTO movieInfoWithoutPersonsDTO = modelMapper.map(movie, MovieInfoWithoutPersonsDTO.class);
+        return movieInfoWithoutPersonsDTO;
+    }
+
+    @Override
     public PersonInfoDTO findPerson(String firstName, String lastName) {
         Person person = personRepository.findByFirstNameAndLastName(firstName, lastName);
         PersonInfoDTO personInfoDTO = modelMapper.map(person, PersonInfoDTO.class);
@@ -54,33 +73,62 @@ public class WatchServiceImpl implements WatchService{
 
     @Transactional
     @Override
-    public PersonInfoDTO movieSeenByExistingPerson(long personId, String imdbMovieId) {
-        Person person = personRepository.findOne(personId);
-        SeenMovie seenMovie = seenMovieRepository.findByImdbMovieId(imdbMovieId);
-
-        if(seenMovie == null) {
-            SeenMovieDTO seenMovieDTO = new SeenMovieDTO(imdbMovieId);
-            seenMovie = modelMapper.map(seenMovieDTO, SeenMovie.class);
-            seenMovieRepository.save(seenMovie);
+    public MovieInfoWithoutPersonsDTO saveMovie(MovieInfoWithoutPersonsDTO movieInfoWithoutPersonsDTO) {
+        Movie movieToSave = modelMapper.map(movieInfoWithoutPersonsDTO, Movie.class);
+        Movie movie = movieRepository.findByTitle(movieToSave.getTitle());
+        if(movie != null) {
+            return modelMapper.map(movie, MovieInfoWithoutPersonsDTO.class);
         }
-
-        if(person != null) {
-            person.addMovie(seenMovie);
-            seenMovie.addPerson(person);
-        }
-
-        PersonInfoDTO personInfoDTO = modelMapper.map(person, PersonInfoDTO.class);
-
-        return personInfoDTO;
+        movieRepository.save(movieToSave);
+        return modelMapper.map(movieToSave, MovieInfoWithoutPersonsDTO.class);
     }
 
-    @Transactional
     @Override
-    public void deleteMovieForPerson(long personId, String imdbMovieId) {
+    public PersonInfoDTO movieSeenByExistingPerson(long personId, long movieId) {
         Person person = personRepository.findOne(personId);
-        SeenMovie seenMovie = seenMovieRepository.findByImdbMovieId(imdbMovieId);
-        person.removeMovie(seenMovie);
+        Movie movie = movieRepository.findOne(movieId);
+
+        if(movie != null && person != null) {
+            movie.addPerson(person);
+            person.addMovie(movie);
+            movieRepository.save(movie);
+            personRepository.save(person);
+        }
+        return modelMapper.map(person, PersonInfoDTO.class);
+    }
+
+    @Override
+    public void movieSeenByUser(MovieInfoWithoutPersonsDTO movieWithoutPerson, PersonInfoWithoutMoviesDTO personWithoutMovie) {
+        Movie movie = modelMapper.map(movieWithoutPerson, Movie.class);
+        Person person = modelMapper.map(personWithoutMovie, Person.class);
+
+        Movie movieToUpdate = movieRepository.findByTitle(movie.getTitle());
+        Person personToUpdate = personRepository.findByFirstNameAndLastName(person.getFirstName(), person.getLastName());
+        if(movieToUpdate != null) {
+            if(personToUpdate != null) {
+                movieToUpdate.addPerson(personToUpdate);
+            } else {
+                movieToUpdate.addPerson(person);
+            }
+            movieRepository.save(movieToUpdate);
+        } else {
+            if(personToUpdate != null) {
+                movie.addPerson(personToUpdate);
+            } else {
+                movie.addPerson(person);
+            }
+            movieRepository.save(movie);
+        }
+    }
+
+    @Override
+    public void deleteMovieForPerson(long personId, long movieId) {
+        Person person = personRepository.findOne(personId);
+        Movie movie = movieRepository.findOne(movieId);
+        person.removeMovie(movie);
+        movie.removePerson(person);
         personRepository.save(person);
+        movieRepository.save(movie);
     }
 
     @Override

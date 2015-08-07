@@ -1,6 +1,9 @@
 package org.singular.controllers;
 
+import org.singular.entities.dto.person.MovieInfoWithoutPersonsDTO;
 import org.singular.entities.dto.person.PersonInfoDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -29,15 +32,21 @@ public class PersonController extends Controller{
     }
 
     @RequestMapping(value = "/persons/person/{personId}/deleteMovie/{movieId}", method = RequestMethod.DELETE)
-    public void deleteMovieForPerson(@PathVariable long personId, @PathVariable String imdbMovieId) throws IOException {
-        watchService.deleteMovieForPerson(personId, imdbMovieId);
+    public void deleteMovieForPerson(@PathVariable long personId, @PathVariable long movieId) throws IOException {
+        watchService.deleteMovieForPerson(personId, movieId);
     }
 
     @RequestMapping(value = "/persons/person/{id}", method = RequestMethod.PUT, consumes = "application/json")
-    public String seenMovieByPerson (@PathVariable long id, @RequestBody String imdbMovieId) throws IOException {
-        PersonInfoDTO personInfoDTO = watchService.movieSeenByExistingPerson(id, imdbMovieId);
+    public String seenMovieByPerson (@PathVariable long id, @RequestBody long movieId) throws IOException {
+        PersonInfoDTO personInfoDTO = watchService.movieSeenByExistingPerson(id, movieId);
 //        return new ResponseEntity<Person>(person,HttpStatus.OK);
         return objectMapper.writeValueAsString(personInfoDTO);
+    }
+
+    @RequestMapping(value = "/saveMovie", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity<MovieInfoWithoutPersonsDTO> create (@RequestBody MovieInfoWithoutPersonsDTO movieInfoWithoutPersonsDTO){
+        MovieInfoWithoutPersonsDTO returnedMovie = watchService.saveMovie(movieInfoWithoutPersonsDTO);
+        return new ResponseEntity<MovieInfoWithoutPersonsDTO>(returnedMovie, HttpStatus.OK);
     }
 
     public static void main(String[] args) {

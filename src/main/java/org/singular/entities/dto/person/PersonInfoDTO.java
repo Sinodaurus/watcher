@@ -7,7 +7,8 @@ public class PersonInfoDTO {
     private long personId;
     private String firstName;
     private String lastName;
-    private Set<SeenMovieInfoWithoutPersonsDTO> seenMovies = new HashSet<>();
+    private String userName;
+    private Set<MovieInfoWithoutPersonsDTO> seenMovies = new HashSet<>();
 
     public PersonInfoDTO() {}
 
@@ -40,21 +41,19 @@ public class PersonInfoDTO {
         this.lastName = lastName;
     }
 
-    public Set<SeenMovieInfoWithoutPersonsDTO> getSeenMovies() {
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public Set<MovieInfoWithoutPersonsDTO> getSeenMovies() {
         return seenMovies;
     }
 
-    public void setSeenMovies(Set<SeenMovieInfoWithoutPersonsDTO> seenMovies) {
+    public void setSeenMovies(Set<MovieInfoWithoutPersonsDTO> seenMovies) {
         this.seenMovies = seenMovies;
-    }
-
-    @Override
-    public String toString() {
-        return "PersonInfoDTO{" +
-                "personId=" + personId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", seenMovies=" + seenMovies +
-                '}';
     }
 }

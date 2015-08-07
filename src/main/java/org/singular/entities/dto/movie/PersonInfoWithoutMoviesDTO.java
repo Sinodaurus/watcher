@@ -4,13 +4,17 @@ public class PersonInfoWithoutMoviesDTO {
     private long personId;
     private String firstName;
     private String lastName;
+    private String userName;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
     public PersonInfoWithoutMoviesDTO() {}
-
-    public PersonInfoWithoutMoviesDTO(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
 
     public long getPersonId() {
         return personId;

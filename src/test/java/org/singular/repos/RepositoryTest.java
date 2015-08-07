@@ -1,7 +1,6 @@
 package org.singular.repos;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,47 +8,60 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
+import org.singular.entities.Movie;
 import org.singular.entities.Person;
-import org.singular.entities.SeenMovie;
+import org.singular.entities.dto.movie.MovieInfoDTO;
+
+import java.io.IOException;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RepositoryTest {
+    private Movie goodMovie;
     private Person person;
-    private SeenMovie seenMovie;
     private ObjectMapper objectMapper = new ObjectMapper();
     private ModelMapper modelMapper = new ModelMapper();
 
     @Mock
-    private PersonRepository personRepository;
+    private MovieRepository movieRepository;
 
     @Mock
-    private SeenMovieRepository seenMovieRepository;
+    private PersonRepository personRepository;
 
     @Before
     public void before() {
+        goodMovie = new Movie();
         person = new Person();
-        seenMovie = new SeenMovie();
-        seenMovie.setSeenMovieId(1);
-        seenMovie.setImdbMovieId("tt0061852");
-        person.setPersonId(1);
+        goodMovie.setTitle("Interstellar");
         person.setFirstName("Sven");
-        person.setLastName("Schittecatte");
+        goodMovie.addPerson(person);
+        person.addMovie(goodMovie);
 
-        person.setSeenMovies(Sets.newHashSet(seenMovie));
-
+        Mockito.when(movieRepository.findOne(1L)).thenReturn(goodMovie);
         Mockito.when(personRepository.findOne(1L)).thenReturn(person);
-        Mockito.when(seenMovieRepository.findOne(1L)).thenReturn(seenMovie);
+
     }
 
     @Test
-    public void addMovieTouserTest() {
+    public void testMakeMustWatch() {
+        Movie movie = movieRepository.findOne(1L);
         Person person = personRepository.findOne(1L);
+    }
 
-        SeenMovie movie = new SeenMovie();
-        movie.setSeenMovieId(2);
-        movie.setImdbMovieId("tt002454");
+    @Test
+    public void testJsonInfiniteLoop() throws IOException {
+        MovieInfoDTO movie = modelMapper.map(goodMovie, MovieInfoDTO.class);
+        String result = objectMapper.writeValueAsString(movie);
+        assertThat(result, containsString("Interstellar"));
+        assertThat(result, containsString("Sven"));
+        assertThat(result, containsString("seenByPersons"));
+    }
 
-        person.addMovie(movie);
+    @Test
+    public void testSaveMovieSeen() {
+        movieRepository.save(goodMovie);
         personRepository.save(person);
     }
 }
