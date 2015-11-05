@@ -3,16 +3,17 @@ package org.singular.entities.dto.person;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PersonInfoDTO {
+public class PersonInfoWithPasswordDTO {
     private long personId;
     private String firstName;
     private String lastName;
     private String userName;
+    private String password;
     private Set<MovieInfoWithoutPersonsDTO> seenMovies = new HashSet<>();
 
-    public PersonInfoDTO() {}
+    public PersonInfoWithPasswordDTO() {}
 
-    public PersonInfoDTO(long personId, String firstName, String lastName) {
+    public PersonInfoWithPasswordDTO(long personId, String firstName, String lastName) {
         this.personId = personId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -48,6 +49,14 @@ public class PersonInfoDTO {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Set<MovieInfoWithoutPersonsDTO> getSeenMovies() {

@@ -4,10 +4,14 @@ import org.singular.entities.dto.movie.MovieInfoDTO;
 import org.singular.entities.dto.movie.PersonInfoWithoutMoviesDTO;
 import org.singular.entities.dto.person.MovieInfoWithoutPersonsDTO;
 import org.singular.entities.dto.person.PersonInfoDTO;
+import org.singular.entities.dto.person.PersonInfoWithPasswordDTO;
 
 import java.util.List;
 
 public interface WatchService {
+    public PersonInfoDTO createPerson(PersonInfoWithPasswordDTO personInfoWithPasswordDTO);
+    public void deletePerson(long id);
+    public PersonInfoDTO updatePerson(PersonInfoDTO personInfoDTO);
     public List<MovieInfoDTO> findAllMovies();
     public List<PersonInfoDTO> findAllPersons();
     public PersonInfoDTO findPersonById(long id);

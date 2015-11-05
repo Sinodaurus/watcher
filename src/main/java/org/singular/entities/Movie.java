@@ -217,4 +217,24 @@ public class Movie implements Serializable{
     public void removePerson(Person person) {
         this.seenByPersons.remove(person);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Movie)) return false;
+
+        Movie movie = (Movie) o;
+
+        if (!imdbID.equals(movie.imdbID)) return false;
+        if (!title.equals(movie.title)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = title.hashCode();
+        result = 31 * result + imdbID.hashCode();
+        return result;
+    }
 }

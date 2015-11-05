@@ -1,5 +1,6 @@
 package org.singular.service.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.singular.entities.Movie;
 import org.singular.entities.Person;
@@ -7,10 +8,13 @@ import org.singular.entities.dto.movie.PersonInfoWithoutMoviesDTO;
 import org.singular.entities.dto.person.MovieInfoWithoutPersonsDTO;
 import org.singular.entities.dto.person.PersonInfoDTO;
 import org.singular.entities.dto.movie.MovieInfoDTO;
+import org.singular.entities.dto.person.PersonInfoWithPasswordDTO;
 import org.singular.repos.PersonRepository;
 import org.singular.repos.MovieRepository;
 import org.singular.service.WatchService;
+import org.singular.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -27,6 +31,25 @@ public class WatchServiceImpl implements WatchService{
 
     @Autowired
     private PersonRepository personRepository;
+
+    @Override
+    public PersonInfoDTO createPerson(PersonInfoWithPasswordDTO personInfoWithPasswordDTO) throws DataIntegrityViolationException{
+        Person person = modelMapper.map(personInfoWithPasswordDTO, Person.class);
+        personRepository.save(person);
+        return modelMapper.map(person, PersonInfoDTO.class);
+    }
+
+    @Override
+    public void deletePerson(long id) {
+        personRepository.delete(id);
+    }
+
+    @Override
+    public PersonInfoDTO updatePerson(PersonInfoDTO personInfoDTO) {
+        Person person = modelMapper.map(personInfoDTO, Person.class);
+        personRepository.save(person);
+        return personInfoDTO;
+    }
 
     @Override
     public List<MovieInfoDTO> findAllMovies() {
@@ -79,7 +102,9 @@ public class WatchServiceImpl implements WatchService{
         if(movie != null) {
             return modelMapper.map(movie, MovieInfoWithoutPersonsDTO.class);
         }
-        movieRepository.save(movieToSave);
+        if(movieValidated(movieToSave)) {
+            movieRepository.save(movieToSave);
+        }
         return modelMapper.map(movieToSave, MovieInfoWithoutPersonsDTO.class);
     }
 
@@ -88,10 +113,9 @@ public class WatchServiceImpl implements WatchService{
         Person person = personRepository.findOne(personId);
         Movie movie = movieRepository.findOne(movieId);
 
-        if(movie != null && person != null) {
+        if(movie != null && person != null && !person.getSeenMovies().contains(movie)) {
             movie.addPerson(person);
             person.addMovie(movie);
-            movieRepository.save(movie);
             personRepository.save(person);
         }
         return modelMapper.map(person, PersonInfoDTO.class);
@@ -127,15 +151,15 @@ public class WatchServiceImpl implements WatchService{
         Movie movie = movieRepository.findOne(movieId);
         person.removeMovie(movie);
         movie.removePerson(person);
-        personRepository.save(person);
         movieRepository.save(movie);
+        personRepository.save(person);
     }
 
     @Override
     public String getPassword(String username) {
         Person person = personRepository.findByUsername(username);
         if(person != null) {
-            return Base64.getEncoder().encodeToString((person.getUsername() + ":" + person.getPassword()).getBytes());
+            return Utils.encodeB64(person.getUsername() + ":" + person.getPassword());
         } else {
             return null;
         }
@@ -149,5 +173,13 @@ public class WatchServiceImpl implements WatchService{
         } else {
             return null;
         }
+    }
+
+    private boolean movieValidated(Movie movie) {
+        if(StringUtils.isNotEmpty(movie.getTitle()) &&
+                StringUtils.isNotEmpty(movie.getImdbID())) {
+            return true;
+        }
+        return false;
     }
 }
